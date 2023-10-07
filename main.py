@@ -61,10 +61,9 @@ class predictScore(tornado.web.RequestHandler):
     def post(self):
         
         headers={'Content-Type': 'application/json', 'Control' : 'no-cache',}
-        #json_data={'USERNAME':os.getenv("USERNAME"),'PASSWORD':os.getenv("PASSWORD"),}  
-        #print(json_data)
-        json_data={'username' : 'ibmuser', 'password' : 'tcs2043',}
-        print(json_data)
+        #json_data= {'USERNAME':os.getenv("USERNAME"),'PASSWORD':os.getenv("PASSWORD"),}  
+        json_data={'username' : 'ibmuser', 'password' : 'tcs2046',}
+        
         response=requests.post('https://192.86.32.113:9888/auth/generateToken', headers=headers,json=json_data,verify=False)
         token=json.loads(response.text)['token']
         
@@ -102,13 +101,13 @@ class predictScore(tornado.web.RequestHandler):
         
         jsonstruct=json.dumps(jsonstruct)
         json_load=json.loads(jsonstruct)
+        print(type(json_load))
         #print(json_load["MODELOUT"]["MODELOUP"]["PROBABILITYX1X"])
         print("df")
         print(json_load)
-        
-        val1=json_load[0]['probability'][0]
-        val2=json_load[0]['probability'][1]
-        #print(val1)
+        print(json_load[0])
+        val1=json_load[0]['probability(0)']
+        val2=json_load[0]['probability(1)']
         val1=round(val1,16)
         val2=round(val2,16)
         #print (val1)
@@ -119,21 +118,24 @@ class predictScore(tornado.web.RequestHandler):
         #print(val1)
         #percent1=val1
         #percent2=int(json_load['MODELOUT']['MODELOUP']['PROBABILITYX0X'])*100
-        print(val1,val2)
+        #print(val1,val2)
         labels= ['Risk for transfer', 'Non-risk for transfer']
         colors=['#14213d','#e63946']
         sizes= [val1,val2]
 
-        if json_load[0]['prediction']:
-            outVal = 'No'
-        else:
-            outVal = 'Yes'
+        #if json_load[0]['prediction'] :
+        #if 'prediction' in json_load[0]:
+            #outVal = json_load[0]['prediction']
+            #print(outVal)
+            #outVal = 'No'
+        #else:
+            #outVal = 'Yes'
         #plt.pie(sizes,labels=labels, colors=colors, startangle=90, autopct='%1.1f%%')
         #plt.axis('equal')
         #plt.show()
 
-        x1x = round(json_load[0]['probability'][1],12)*100
-        x0x = round(json_load[0]['probability'][0],12)*100
+        x1x = round(json_load[0]['probability(1)'],12)*100
+        x0x = round(json_load[0]['probability(0)'],12)*100
 
 
         self.render("static/result.html",label=labels,color=colors,size=sizes,x1x=x1x,xox=x0x,bloc="predictScore", jsonstruct=jsonstruct,
@@ -144,8 +146,8 @@ class predictScore(tornado.web.RequestHandler):
                     ext_source_2=ext_source_2,graduate=graduate,
                     postgraduate=postgraduate,
                     income_type=income_type,
-                    occupation_type=occupation_type,
-                    outVal=outVal)
+                    occupation_type=occupation_type)
+                    #outVal=outVal)
         
 
 
