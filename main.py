@@ -61,9 +61,9 @@ class predictScore(tornado.web.RequestHandler):
     def post(self):
         
         headers={'Content-Type': 'application/json', 'Control' : 'no-cache',}
-        #json_data={'USERNAME':os.getenv("USERNAME"),'PASSWORD':os.getenv("PASSWORD"),}  
+        json_data={'USERNAME':os.getenv("USERNAME"),'PASSWORD':os.getenv("PASSWORD"),}  
         #print(json_data)
-        json_data={'username' : 'ibmuser', 'password' : 'tcs2043',}
+        #json_data={'username' : 'ibmuser', 'password' : 'tcs2046',}
         print(json_data)
         response=requests.post('https://192.86.32.113:9888/auth/generateToken', headers=headers,json=json_data,verify=False)
         token=json.loads(response.text)['token']
@@ -106,8 +106,8 @@ class predictScore(tornado.web.RequestHandler):
         print("df")
         print(json_load)
         
-        val1=json_load[0]['probability'][0]
-        val2=json_load[0]['probability'][1]
+        val1=json_load[0]['probability(0)']
+        val2=json_load[0]['probability(1)']
         #print(val1)
         val1=round(val1,16)
         val2=round(val2,16)
@@ -124,16 +124,16 @@ class predictScore(tornado.web.RequestHandler):
         colors=['#14213d','#e63946']
         sizes= [val1,val2]
 
-        if json_load[0]['prediction']:
-            outVal = 'No'
-        else:
-            outVal = 'Yes'
+        #if json_load[0]['prediction']:
+            #outVal = 'No'
+        #else:
+            #outVal = 'Yes'
         #plt.pie(sizes,labels=labels, colors=colors, startangle=90, autopct='%1.1f%%')
         #plt.axis('equal')
         #plt.show()
 
-        x1x = round(json_load[0]['probability'][1],12)*100
-        x0x = round(json_load[0]['probability'][0],12)*100
+        x1x = round(json_load[0]['probability(1)'],12)*100
+        x0x = round(json_load[0]['probability(0)'],12)*100
 
 
         self.render("static/result.html",label=labels,color=colors,size=sizes,x1x=x1x,xox=x0x,bloc="predictScore", jsonstruct=jsonstruct,
@@ -144,8 +144,7 @@ class predictScore(tornado.web.RequestHandler):
                     ext_source_2=ext_source_2,graduate=graduate,
                     postgraduate=postgraduate,
                     income_type=income_type,
-                    occupation_type=occupation_type,
-                    outVal=outVal)
+                    occupation_type=occupation_type)
         
 
 
